@@ -1,0 +1,761 @@
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Michael Omondi | Sacred Masculine Wellness</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+:root {
+--gold: #C9A84C;
+--gold-light: #F0D080;
+--gold-dark: #8B6914;
+--deep: #0A0705;
+--dark: #110E08;
+--mid: #1C1710;
+--text: #E8DCC8;
+--text-dim: #9A8B6E;
+--crimson: #8B1A1A;
+--white: #F5EDD8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+background: var(--deep);
+color: var(--text);
+font-family: 'Cormorant Garamond', serif;
+overflow-x: hidden;
+cursor: none; /* Hidden by default, shown on non-touch via media query */
+}
+
+/* ===== TOUCH DEVICE OPTIMIZATIONS ===== */
+@media (hover: none) and (pointer: coarse) {
+body { cursor: auto; }
+.cursor, .cursor-ring { display: none; }
+.sidebar-toggle { width: 50px; height: 50px; top: 20px; left: 20px; transform: none; border: 1px solid rgba(201,168,76,0.3); border-radius: 8px; background: rgba(10,7,5,0.9); backdrop-filter: blur(5px); }
+.sidebar-toggle .bar { width: 24px; }
+.sidebar-toggle .toggle-label, .sidebar-toggle .toggle-arrow { display: none; }
+.btn-primary, .btn-outline, .nav-links a, .sefirot-item, .testo-card, .story-card, .pillar, .ritual-step { touch-action: manipulation; }
+.form-input, .form-textarea { font-size: 16px; } /* Prevents zoom on iOS/Android focus */
+}
+
+.cursor {
+position: fixed; width: 12px; height: 12px;
+background: var(--gold); border-radius: 50%;
+pointer-events: none; z-index: 9999;
+transform: translate(-50%,-50%);
+transition: transform 0.1s, width 0.2s, height 0.2s;
+mix-blend-mode: difference;
+}
+.cursor-ring {
+position: fixed; width: 40px; height: 40px;
+border: 1px solid var(--gold); border-radius: 50%;
+pointer-events: none; z-index: 9998;
+transform: translate(-50%,-50%);
+transition: all 0.15s ease; opacity: 0.6;
+}
+#bg-canvas {
+position: fixed; top: 0; left: 0;
+width: 100%; height: 100%;
+z-index: 0; pointer-events: none;
+}
+/* ===== SIDEBAR TOGGLE TAB ===== */
+.sidebar-backdrop {
+position: fixed; inset: 0;
+background: rgba(0,0,0,0.8);
+z-index: 1050; opacity: 0;
+pointer-events: none;
+transition: opacity 0.4s ease;
+backdrop-filter: blur(4px);
+}
+.sidebar-backdrop.visible { opacity: 1; pointer-events: all; }
+.sidebar-toggle {
+position: fixed;
+top: 50%; left: 0;
+transform: translateY(-50%);
+z-index: 1200;
+width: 52px;
+background: linear-gradient(180deg, #1a1200, #0d0a04, #1a1200);
+border: none;
+border-right: 3px solid var(--gold);
+border-top: 1px solid rgba(201,168,76,0.4);
+border-bottom: 1px solid rgba(201,168,76,0.4);
+cursor: pointer;
+display: flex; flex-direction: column;
+align-items: center; justify-content: center;
+gap: 8px; padding: 20px 0 24px;
+transition: all 0.3s ease;
+animation: tabPulse 3s ease-in-out infinite;
+}
+@keyframes tabPulse {
+0%,100% { box-shadow: 4px 0 20px rgba(201,168,76,0.1); }
+50%      { box-shadow: 4px 0 40px rgba(201,168,76,0.4); }
+}
+.sidebar-toggle:hover { width: 60px; border-right-color: var(--gold-light); box-shadow: 6px 0 50px rgba(201,168,76,0.5); animation: none; }
+.sidebar-toggle .bar { width: 22px; height: 2px; background: var(--gold); border-radius: 2px; transition: all 0.35s cubic-bezier(0.4,0,0.2,1); transform-origin: center; }
+.sidebar-toggle.is-open .bar:nth-child(2) { transform: translateY(7px) rotate(45deg); }
+.sidebar-toggle.is-open .bar:nth-child(3) { opacity: 0; transform: scaleX(0); }
+.sidebar-toggle.is-open .bar:nth-child(4) { transform: translateY(-7px) rotate(-45deg); }
+.toggle-label {
+writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg);
+font-family: 'Rajdhani', sans-serif; font-size: 0.55rem; letter-spacing: 3px;
+text-transform: uppercase; color: var(--gold); opacity: 0.8; margin-top: 6px;
+transition: opacity 0.3s; user-select: none;
+}
+.sidebar-toggle:hover .toggle-label { opacity: 1; }
+.toggle-arrow { font-size: 0.7rem; color: var(--gold); opacity: 0.6; animation: arrowBounce 1.5s ease-in-out infinite; }
+@keyframes arrowBounce { 0%,100%{transform:translateX(0)} 50%{transform:translateX(3px)} }
+.sidebar-toggle.is-open .toggle-label,
+.sidebar-toggle.is-open .toggle-arrow { display: none; }
+/* ===== LEFT SIDEBAR ===== */
+nav#sidebar {
+position: fixed; top: 0; left: 0;
+width: 260px; height: 100dvh; /* Dynamic viewport height */
+z-index: 1100;
+display: flex; flex-direction: column;
+background: #080604;
+border-right: 1px solid rgba(201,168,76,0.18);
+overflow: hidden;
+transform: translateX(-100%);
+transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s ease;
+}
+nav#sidebar.open {
+transform: translateX(0);
+box-shadow: 6px 0 60px rgba(0,0,0,0.8), 2px 0 20px rgba(201,168,76,0.08);
+}
+nav#sidebar::before {
+content: ''; display: block; width: 100%; height: 3px;
+background: linear-gradient(to right, var(--gold-dark), var(--gold), var(--gold-dark));
+flex-shrink: 0;
+}
+.nav-logo {
+display: flex; flex-direction: column;
+padding: 28px 28px 24px;
+border-bottom: 1px solid rgba(201,168,76,0.1);
+text-decoration: none; flex-shrink: 0;
+background: linear-gradient(135deg, rgba(201,168,76,0.06), transparent);
+position: relative; overflow: hidden;
+}
+.nav-logo::before {
+content: '✡'; position: absolute; right: 16px; top: 50%;
+transform: translateY(-50%); font-size: 2.5rem;
+color: rgba(201,168,76,0.07); pointer-events: none;
+}
+.nav-logo-name { font-family: 'Cinzel Decorative', serif; font-size: 1.05rem; color: var(--gold); letter-spacing: 1px; line-height: 1.3; margin-top: 10px; }
+.nav-logo-sub { font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase; margin-top: 5px; }
+.nav-links { list-style: none; padding: 12px 0; flex: 1; overflow-y: auto; scrollbar-width: none; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links li { width: 100%; }
+.nav-links a {
+display: flex; align-items: center; gap: 14px;
+padding: 16px 28px; /* Increased padding for touch */
+text-decoration: none;
+color: var(--text-dim);
+font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; /* Slightly larger for mobile */
+letter-spacing: 2.5px; text-transform: uppercase;
+border-left: 3px solid transparent;
+transition: all 0.25s ease; position: relative;
+}
+.nav-links a::after {
+content: ''; position: absolute; right: 20px; top: 50%;
+transform: translateY(-50%); width: 4px; height: 4px;
+border-radius: 50%; background: var(--gold); opacity: 0; transition: opacity 0.25s;
+}
+.nav-links a:hover { color: var(--white); background: rgba(201,168,76,0.05); border-left-color: rgba(201,168,76,0.4); padding-left: 34px; }
+.nav-links a.active-link { color: var(--gold); background: linear-gradient(to right, rgba(201,168,76,0.1), transparent); border-left-color: var(--gold); padding-left: 34px; }
+.nav-links a.active-link::after { opacity: 1; }
+.nav-icon { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+.nav-divider { height: 1px; background: linear-gradient(to right, transparent, rgba(201,168,76,0.12), transparent); margin: 8px 20px; }
+.nav-footer { padding: 16px 28px 24px; border-top: 1px solid rgba(201,168,76,0.1); background: rgba(0,0,0,0.3); flex-shrink: 0; }
+.nav-footer-label { font-family: 'Rajdhani', sans-serif; font-size: 0.58rem; letter-spacing: 3px; color: rgba(154,139,110,0.4); text-transform: uppercase; line-height: 1.8; }
+.nav-footer-email { font-family: 'Rajdhani', sans-serif; font-size: 0.62rem; letter-spacing: 1px; color: rgba(201,168,76,0.5); margin-top: 2px; }
+@media(min-width:1100px) {
+body.sidebar-open .main-wrap { margin-left: 260px; transition: margin-left 0.4s; }
+body:not(.sidebar-open) .main-wrap { margin-left: 0; transition: margin-left 0.4s; }
+.sidebar-backdrop { display: none; }
+}
+@media(max-width:900px) {
+.section { padding: 60px 20px; }
+.kab-grid, .about-split, .contact-grid, .hormone-visual { grid-template-columns: 1fr; gap: 40px; }
+.stats-bar { grid-template-columns: repeat(2, 1fr); }
+.quote-block { padding: 30px 20px; }
+#narratives .stories-grid { grid-template-columns: 1fr; }
+.testo-intro-grid { grid-template-columns: 1fr; }
+.hero-title { font-size: clamp(2rem, 12vw, 5rem); }
+.page-banner { height: 30vh; min-height: 250px; padding: 40px 20px; }
+}
+/* Extra Small Devices */
+@media(max-width:480px) {
+.section { padding: 40px 16px; }
+.hero-cta { flex-direction: column; width: 100%; }
+.btn-primary, .btn-outline { width: 100%; text-align: center; }
+.stats-bar { grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { padding: 20px 10px; }
+.stat-num { font-size: 2rem; }
+.pillars-row { grid-template-columns: 1fr; }
+}
+.main-wrap { min-height: 100dvh; }
+.page { display: none; min-height: 100dvh; position: relative; z-index: 1; animation: pageIn 0.6s ease forwards; }
+.page.active { display: block; }
+@keyframes pageIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+#home { display: none; height: 100dvh; position: relative; overflow: hidden; }
+#home.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.hero-content { text-align: center; z-index: 2; padding: 0 20px; animation: heroReveal 2s ease forwards; }
+@keyframes heroReveal { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+.hero-eyebrow { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; letter-spacing: 8px; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; opacity: 0.8; }
+.hero-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(2.5rem, 8vw, 7rem); font-weight: 900; line-height: 1; background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }
+.hero-subtitle { font-family: 'Cinzel Decorative', serif; font-size: clamp(1rem, 3vw, 2rem); font-weight: 400; color: var(--text-dim); letter-spacing: 4px; margin-bottom: 32px; }
+.hero-desc { font-size: 1.2rem; font-style: italic; color: var(--text-dim); max-width: 600px; margin: 0 auto 48px; line-height: 1.8; }
+.hero-cta { display: inline-flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.btn-primary { padding: 16px 48px; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: var(--deep); font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(201,168,76,0.3); }
+.btn-outline { padding: 16px 48px; background: transparent; color: var(--gold); font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; text-decoration: none; border: 1px solid var(--gold); cursor: pointer; transition: all 0.3s; }
+.btn-outline:hover { background: rgba(201,168,76,0.1); transform: translateY(-3px); }
+.scroll-indicator { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-dim); font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; letter-spacing: 4px; animation: pulse 2s infinite; }
+.scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--gold), transparent); }
+@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+.section { padding: 120px 60px; max-width: 1400px; margin: 0 auto; }
+.section-tag { font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
+.section-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; line-height: 1.1; background: linear-gradient(135deg, var(--white), var(--gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 24px; }
+.section-body { font-size: 1.15rem; line-height: 2; color: var(--text-dim); max-width: 700px; }
+.divider { width: 80px; height: 2px; background: linear-gradient(to right, transparent, var(--gold), transparent); margin: 40px 0; }
+.sacred-symbol { font-size: 4rem; color: rgba(201,168,76,0.3); display: block; margin: 20px 0; }
+.page-banner { height: 40vh; min-height: 300px; display: flex; flex-direction: column; justify-content: flex-end; padding: 60px; position: relative; overflow: hidden; border-bottom: 1px solid rgba(201,168,76,0.15); }
+.page-banner::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; top: 0; background: linear-gradient(to top, var(--deep), transparent); }
+.page-banner-content { position: relative; z-index: 1; }
+.page-banner-tag { font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; letter-spacing: 6px; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }
+.page-banner-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(2rem, 5vw, 4rem); color: var(--white); }
+.kab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-top: 60px; }
+.kab-tree-3d { position: relative; width: 100%; height: 600px; }
+#kab-canvas { width: 100%; height: 100%; border: 1px solid rgba(201,168,76,0.2); }
+.sefirot-list { display: flex; flex-direction: column; gap: 20px; }
+.sefirot-item { padding: 20px 24px; border-left: 2px solid var(--gold-dark); background: rgba(201,168,76,0.03); transition: all 0.3s; cursor: pointer; }
+.sefirot-item:hover { border-left-color: var(--gold); background: rgba(201,168,76,0.08); transform: translateX(8px); }
+.sefirot-name { font-family: 'Cinzel Decorative', serif; font-size: 1rem; color: var(--gold); margin-bottom: 6px; }
+.sefirot-desc { font-size: 0.95rem; color: var(--text-dim); line-height: 1.7; }
+.testo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 60px; }
+.testo-card { padding: 40px 32px; border: 1px solid rgba(201,168,76,0.15); background: linear-gradient(135deg, rgba(201,168,76,0.05), transparent); position: relative; overflow: hidden; transition: all 0.4s; }
+.testo-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(to right, transparent, var(--gold), transparent); transform: scaleX(0); transition: transform 0.4s; }
+.testo-card:hover::before { transform: scaleX(1); }
+.testo-card:hover { transform: translateY(-8px); border-color: rgba(201,168,76,0.4); }
+.card-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+.card-title { font-family: 'Cinzel Decorative', serif; font-size: 1rem; color: var(--gold); margin-bottom: 12px; }
+.card-body { font-size: 0.95rem; color: var(--text-dim); line-height: 1.8; }
+#narratives .stories-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 60px; }
+.story-card { position: relative; padding: 48px 40px; background: linear-gradient(135deg, rgba(201,168,76,0.05), rgba(139,26,26,0.05)); border: 1px solid rgba(201,168,76,0.1); overflow: hidden; transition: all 0.4s; }
+.story-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-4px); }
+.story-number { position: absolute; top: 24px; right: 32px; font-family: 'Cinzel Decorative', serif; font-size: 3rem; color: rgba(201,168,76,0.1); font-weight: 900; }
+.story-title { font-family: 'Cinzel Decorative', serif; font-size: 1.2rem; color: var(--gold); margin-bottom: 16px; }
+.story-body { font-size: 1rem; color: var(--text-dim); line-height: 1.9; font-style: italic; }
+.pillars-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px; margin-top: 60px; }
+.pillar { padding: 60px 32px; background: rgba(201,168,76,0.03); border: 1px solid rgba(201,168,76,0.08); text-align: center; transition: all 0.4s; position: relative; overflow: hidden; }
+.pillar::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--gold); transform: scaleX(0); transition: transform 0.4s; }
+.pillar:hover::after { transform: scaleX(1); }
+.pillar:hover { background: rgba(201,168,76,0.07); }
+.pillar-icon { font-size: 3rem; margin-bottom: 20px; display: block; }
+.pillar-name { font-family: 'Cinzel Decorative', serif; font-size: 0.9rem; color: var(--gold); letter-spacing: 2px; margin-bottom: 12px; }
+.pillar-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
+.stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin: 80px 0; border: 1px solid rgba(201,168,76,0.15); }
+.stat { padding: 48px 32px; text-align: center; border-right: 1px solid rgba(201,168,76,0.1); background: linear-gradient(135deg, rgba(201,168,76,0.03), transparent); }
+.stat:last-child { border-right: none; }
+.stat-num { font-family: 'Cinzel Decorative', serif; font-size: 3rem; color: var(--gold); display: block; margin-bottom: 8px; }
+.stat-label { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); }
+.ritual-timeline { position: relative; padding-left: 60px; margin-top: 60px; }
+.ritual-timeline::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--gold), transparent); }
+.ritual-step { position: relative; margin-bottom: 60px; padding: 32px 40px; border: 1px solid rgba(201,168,76,0.1); background: rgba(201,168,76,0.02); transition: all 0.3s; }
+.ritual-step:hover { border-color: rgba(201,168,76,0.3); }
+.ritual-step::before { content: ''; position: absolute; left: -49px; top: 32px; width: 18px; height: 18px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 20px rgba(201,168,76,0.5); }
+.step-time { font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.step-title { font-family: 'Cinzel Decorative', serif; font-size: 1.2rem; color: var(--white); margin-bottom: 12px; }
+.step-body { font-size: 1rem; color: var(--text-dim); line-height: 1.9; }
+.quote-block { padding: 60px 80px; border-left: 3px solid var(--gold); background: linear-gradient(to right, rgba(201,168,76,0.05), transparent); margin: 60px 0; position: relative; }
+.quote-block::before { content: '"'; position: absolute; top: -20px; left: 60px; font-family: 'Cinzel Decorative', serif; font-size: 8rem; color: rgba(201,168,76,0.1); line-height: 1; }
+.quote-text { font-size: 1.5rem; font-style: italic; color: var(--text); line-height: 1.8; margin-bottom: 20px; }
+.quote-attr { font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); }
+.hormone-visual { display: grid; grid-template-columns: 1fr 2fr; gap: 60px; margin-top: 60px; }
+.hormone-label { display: flex; justify-content: space-between; font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+.hormone-track { height: 4px; background: rgba(201,168,76,0.1); position: relative; overflow: hidden; }
+.hormone-fill { height: 100%; background: linear-gradient(to right, var(--gold-dark), var(--gold)); width: 0%; animation: fillBar 1.5s ease forwards; }
+@keyframes fillBar { to { width: var(--target-width); } }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 60px; }
+.contact-item { display: flex; gap: 20px; margin-bottom: 32px; align-items: flex-start; padding-bottom: 32px; border-bottom: 1px solid rgba(201,168,76,0.1); }
+.contact-icon { font-size: 1.5rem; color: var(--gold); }
+.contact-label { font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.contact-val { font-size: 1rem; color: var(--text-dim); }
+.contact-form { display: flex; flex-direction: column; gap: 20px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-label { font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); }
+.form-input, .form-textarea { background: rgba(201,168,76,0.03); border: 1px solid rgba(201,168,76,0.2); padding: 14px 20px; color: var(--text); font-family: 'Cormorant Garamond', serif; font-size: 1rem; outline: none; transition: border-color 0.3s; }
+.form-input:focus, .form-textarea:focus { border-color: var(--gold); }
+.form-textarea { resize: vertical; min-height: 120px; }
+.testo-intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-bottom: 80px; }
+#testo-canvas { width: 100%; height: 400px; border: 1px solid rgba(201,168,76,0.15); }
+footer { border-top: 1px solid rgba(201,168,76,0.15); padding: 60px; text-align: center; position: relative; z-index: 1; }
+.footer-logo { font-family: 'Cinzel Decorative', serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 16px; display: block; }
+.footer-text { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 32px; font-style: italic; }
+.footer-links { display: flex; gap: 40px; justify-content: center; list-style: none; flex-wrap: wrap; }
+.footer-links a { color: var(--text-dim); text-decoration: none; font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; transition: color 0.3s; }
+.footer-links a:hover { color: var(--gold); }
+.footer-copy { margin-top: 40px; font-size: 0.75rem; color: rgba(154,139,110,0.4); font-family: 'Rajdhani', sans-serif; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleNav()" aria-label="Open navigation menu">
+<span class="toggle-arrow">›</span>
+<span class="bar"></span>
+<span class="bar"></span>
+<span class="bar"></span>
+<span class="toggle-label">Explore Menu</span>
+</button>
+<nav id="sidebar">
+<a class="nav-logo" href="#" onclick="showPage('home')">
+<span class="nav-logo-name">Michael Omondi</span>
+<span class="nav-logo-sub">Sacred Masculine · 2026</span>
+</a>
+<ul class="nav-links">
+<li><a href="#" onclick="showPage('home')" id="nav-home"><span class="nav-icon">🏛️</span>Home</a></li>
+<div class="nav-divider"></div>
+<li><a href="#" onclick="showPage('kabbalah')" id="nav-kabbalah"><span class="nav-icon">🌳</span>Kabbalah</a></li>
+<li><a href="#" onclick="showPage('testosterone')" id="nav-testosterone"><span class="nav-icon">⚡</span>Testosterone</a></li>
+<li><a href="#" onclick="showPage('narratives')" id="nav-narratives"><span class="nav-icon">📖</span>Narratives</a></li>
+<li><a href="#" onclick="showPage('pillars')" id="nav-pillars"><span class="nav-icon">🔱</span>Pillars</a></li>
+<div class="nav-divider"></div>
+<li><a href="#" onclick="showPage('ritual')" id="nav-ritual"><span class="nav-icon">🔥</span>Ritual</a></li>
+<li><a href="#" onclick="showPage('hormones')" id="nav-hormones"><span class="nav-icon">🧬</span>Hormones</a></li>
+<li><a href="#" onclick="showPage('philosophy')" id="nav-philosophy"><span class="nav-icon">♟️</span>Philosophy</a></li>
+<div class="nav-divider"></div>
+<li><a href="#" onclick="showPage('contact')" id="nav-contact"><span class="nav-icon">✉️</span>Contact</a></li>
+</ul>
+<div class="nav-footer">
+<div class="nav-footer-label">© 2026 Michael Omondi<br>All Rights Reserved</div>
+<div class="nav-footer-email">michaelomondi@outlook.com</div>
+</div>
+</nav>
+<div class="main-wrap">
+<!-- HOME -->
+<div id="home" class="page active">
+<div class="hero-content">
+<span class="hero-eyebrow">Sacred Masculine Wellness · 2026</span>
+<h1 class="hero-title">Michael<br>Omondi</h1>
+<p class="hero-subtitle">Reclaim Your Sacred Masculine Power</p>
+<p class="hero-desc">Where ancient Kabbalistic wisdom meets modern men's wellness — awakening strength, vitality, and spiritual sovereignty in every man.</p>
+<div class="hero-cta">
+<button class="btn-primary" onclick="showPage('kabbalah')">Explore Kabbalah</button>
+<button class="btn-outline" onclick="showPage('contact')">Get In Touch</button>
+</div>
+</div>
+<div class="scroll-indicator">
+<div class="scroll-line"></div>
+<span>EXPLORE</span>
+</div>
+</div>
+<!-- KABBALAH -->
+<div id="kabbalah" class="page">
+<div class="page-banner">
+<div class="page-banner-content">
+<p class="page-banner-tag">Ancient Wisdom · Sacred Map</p>
+<h1 class="page-banner-title">The Kabbalistic<br>Tree of Life</h1>
+</div>
+</div>
+<div class="section">
+<p class="section-body">The Tree of Life (Etz Chaim) is the central diagram of Kabbalistic wisdom — ten divine emanations (Sefirot) connected by 22 paths, representing the complete architecture of existence, consciousness, and masculine power.</p>
+<div class="divider"></div>
+<div class="kab-grid">
+<div class="kab-tree-3d"><canvas id="kab-canvas"></canvas></div>
+<div class="sefirot-list">
+<div class="sefirot-item"><div class="sefirot-name">1. Kether — The Crown</div><div class="sefirot-desc">Pure divine will and consciousness. The highest masculine aspiration — to be aligned with universal purpose, transcending ego.</div></div>
+<div class="sefirot-item"><div class="sefirot-name">2. Chokmah — Wisdom</div><div class="sefirot-desc">The primordial masculine force — dynamic, electric, the seed of all ideas. The father energy that initiates creation.</div></div>
+<div class="sefirot-item"><div class="sefirot-name">3. Binah — Understanding</div><div class="sefirot-desc">The great womb of form — where masculine energy finds structure and patience. The disciplined masculine mind.</div></div>
+<div class="sefirot-item"><div class="sefirot-name">4. Chesed — Mercy</div><div class="sefirot-desc">Loving-kindness and generosity. The king who provides for his kingdom — masculine strength expressed as benevolence.</div></div>
+<div class="sefirot-item"><div class="sefirot-name">5. Geburah — Strength</div><div class="sefirot-desc">Discipline, judgment, courage. The warrior's sefirah — setting boundaries, facing challenges, burning away weakness.</div></div>
+<div class="sefirot-item"><div class="sefirot-name">6. Tiphareth — Beauty</div><div class="sefirot-desc">The heart center — integration of all opposites. The solar masculine at its most radiant, compassionate, and whole.</div></div>
+<div class="sefirot-item"><div class="sefirot-name">7–10. Lower Sefirot</div><div class="sefirot-desc">Netzach (Victory), Hod (Splendor), Yesod (Foundation), Malkuth (Kingdom) — the grounding of spirit into physical masculine action.</div></div>
+</div>
+</div>
+<div class="quote-block">
+<p class="quote-text">The man who knows himself through the Tree of Life knows the universe. He who masters his Sefirot masters his destiny.</p>
+<span class="quote-attr">— Kabbalistic Teaching</span>
+</div>
+<div class="testo-grid">
+<div class="testo-card"><span class="card-icon">🌳</span><div class="card-title">The Three Pillars</div><div class="card-body">Severity (left), Mercy (right), and Balance (middle) — the three pillars of the Tree mirror the masculine need for discipline, love, and integration.</div></div>
+<div class="testo-card"><span class="card-icon">⚡</span><div class="card-title">The Lightning Flash</div><div class="card-body">Divine energy descends through all ten Sefirot in the Lightning Flash — a map of how creative masculine power manifests from pure spirit into physical reality.</div></div>
+<div class="testo-card"><span class="card-icon">🔄</span><div class="card-title">The 22 Paths</div><div class="card-body">Each of the 22 paths connecting the Sefirot corresponds to a Hebrew letter and archetype — a complete curriculum for masculine psychological development.</div></div>
+</div>
+</div>
+</div>
+<!-- TESTOSTERONE -->
+<div id="testosterone" class="page">
+<div class="page-banner">
+<div class="page-banner-content">
+<p class="page-banner-tag">Biological Foundation · Sacred Hormone</p>
+<h1 class="page-banner-title">The Power of<br>Testosterone</h1>
+</div>
+</div>
+<div class="section">
+<div class="testo-intro-grid">
+<div>
+<span class="section-tag">The Sacred Hormone</span>
+<p class="section-body">Testosterone is not merely a chemical — it is the biological expression of the masculine principle. It is the physical Chokmah — the vital, initiating, building force that drives men to create, protect, lead, and transcend.</p>
+<div class="divider"></div>
+<p class="section-body">Modern civilization has declared war on testosterone — through environmental estrogens, sedentary lifestyles, chronic stress, and spiritual disconnection. Reclaiming your testosterone is an act of masculine sovereignty.</p>
+</div>
+<canvas id="testo-canvas"></canvas>
+</div>
+<div class="stats-bar">
+<div class="stat"><span class="stat-num">30%</span><span class="stat-label">Drop since 1980s</span></div>
+<div class="stat"><span class="stat-num">1%</span><span class="stat-label">Annual decline after 30</span></div>
+<div class="stat"><span class="stat-num">40+</span><span class="stat-label">Body functions affected</span></div>
+<div class="stat"><span class="stat-num">3x</span><span class="stat-label">Higher vitality possible</span></div>
+</div>
+<div class="testo-grid">
+<div class="testo-card"><span class="card-icon">💪</span><div class="card-title">Muscle & Strength</div><div class="card-body">Testosterone is the primary anabolic hormone — it drives protein synthesis, muscle fiber development, and the physical strength that allows men to build, protect, and endure.</div></div>
+<div class="testo-card"><span class="card-icon">🧠</span><div class="card-title">Cognitive Power</div><div class="card-body">High testosterone correlates with spatial reasoning, mental clarity, decisive thinking, and the drive to compete and innovate. It is the hormone of mission and purpose.</div></div>
+<div class="testo-card"><span class="card-icon">🔥</span><div class="card-title">Libido & Vitality</div><div class="card-body">Sexual energy is creative life force. Testosterone fuels not just physical desire but the broader erotic drive to engage with life — to build, achieve, and create legacy.</div></div>
+<div class="testo-card"><span class="card-icon">❤️</span><div class="card-title">Cardiovascular Health</div><div class="card-body">Optimal testosterone supports red blood cell production, healthy lipid profiles, and cardiovascular resilience — the biological foundation of masculine endurance.</div></div>
+<div class="testo-card"><span class="card-icon">🦴</span><div class="card-title">Bone Density</div><div class="card-body">Testosterone is essential for maintaining bone mineral density throughout a man's life — the literal hardness and structural integrity of the masculine body.</div></div>
+<div class="testo-card"><span class="card-icon">😤</span><div class="card-title">Emotional Regulation</div><div class="card-body">Contrary to myth, optimal testosterone reduces anxiety and depression, and increases confidence, assertiveness, and emotional resilience in men.</div></div>
+</div>
+<div class="quote-block">
+<p class="quote-text">To optimize your testosterone is to honor the Sefirah of Geburah — strength, discipline, and the sacred masculine fire within you.</p>
+<span class="quote-attr">— Michael Omondi</span>
+</div>
+</div>
+</div>
+<!-- NARRATIVES -->
+<div id="narratives" class="page">
+<div class="page-banner">
+<div class="page-banner-content">
+<p class="page-banner-tag">Sacred Stories · Masculine Archetypes</p>
+<h1 class="page-banner-title">Men's Narratives &<br>Sacred Archetypes</h1>
+</div>
+</div>
+<div class="section">
+<p class="section-body">Every man lives within a narrative. The question is: is it a narrative of sovereignty, or one of victimhood? The Kabbalistic tradition gives us archetypal stories that reframe the masculine journey.</p>
+<div class="divider"></div>
+<div class="stories-grid">
+<div class="story-card"><span class="story-number">01</span><div class="story-title">The Warrior's Descent</div><div class="story-body">Like the hero descending into the underworld, every man must face his shadow — the suppressed anger, grief, and fear stored in his body. Testosterone is depleted by unprocessed emotion. The warrior descends not to be destroyed but to retrieve his power from the darkness.</div></div>
+<div class="story-card"><span class="story-number">02</span><div class="story-title">King Solomon's Wisdom</div><div class="story-body">Solomon embodied Tiphareth — the integrated king who ruled from the heart center. His wisdom was not merely intellectual but somatic — he governed his kingdom as a man governs his own body, with balance between mercy and severity.</div></div>
+<div class="story-card"><span class="story-number">03</span><div class="story-title">Samson & Sacred Vitality</div><div class="story-body">Samson's story is the Kabbalistic allegory of masculine vital energy (Yesod) — when a man dissipates his life force through unconscious choices, he loses his strength. When he reclaims his purpose, even in defeat, he becomes his most powerful.</div></div>
+<div class="story-card"><span class="story-number">04</span><div class="story-title">The Modern Man's Crisis</div><div class="story-body">The statistics are alarming: male testosterone levels have dropped 30% since the 1980s. Men are less connected to purpose, community, and their own bodies than at any point in history. This is not weakness — it is a collective initiation calling us back to the sacred masculine.</div></div>
+<div class="story-card"><span class="story-number">05</span><div class="story-title">The Initiation of Fire</div><div class="story-body">Ancient masculine initiations involved fire, isolation, and the symbolic death of the boy-self. Modern men lack initiation — and so they remain psychologically adolescent regardless of age. The Kabbalistic path provides the initiatory framework the modern world has abandoned.</div></div>
+<div class="story-card"><span class="story-number">06</span><div class="story-title">Rebuilding the Brotherhood</div><div class="story-body">Men are dying of loneliness — not lack of social media, but lack of genuine brotherhood, mentorship, and shared purpose. The Sefirah of Chesed teaches that masculine strength is not solitary but communal — expressed through bonds of loyalty and shared mission.</div></div>
+</div>
+</div>
+</div>
+<!-- PILLARS -->
+<div id="pillars" class="page">
+<div class="page-banner">
+<div class="page-banner-content">
+<p class="page-banner-tag">The Foundation · Seven Domains</p>
+<h1 class="page-banner-title">Pillars of Sacred<br>Masculine Wellness</h1>
+</div>
+</div>
+<div class="section">
+<p class="section-body">Men's wellness is not a single dimension. It is a seven-pillar architecture — each column corresponding to a dimension of the Kabbalistic Tree and a domain of masculine life.</p>
+<div class="divider"></div>
+<div class="pillars-row">
+<div class="pillar"><span class="pillar-icon">🧬</span><div class="pillar-name">Hormonal Health</div><div class="pillar-text">Testosterone, cortisol, insulin, and thyroid optimization — the biological foundation of masculine vitality and cognitive power.</div></div>
+<div class="pillar"><span class="pillar-icon">🌿</span><div class="pillar-name">Nutrition</div><div class="pillar-text">Ancestral eating patterns that support steroid hormone production — animal proteins, healthy fats, mineral-rich foods.</div></div>
+<div class="pillar"><span class="pillar-icon">⚔️</span><div class="pillar-name">Physical Training</div><div class="pillar-text">Heavy compound lifting, sprint training, and martial arts — the physical practices that signal your body to produce testosterone.</div></div>
+<div class="pillar"><span class="pillar-icon">🧘</span><div class="pillar-name">Mental Sovereignty</div><div class="pillar-text">Stoic philosophy, Kabbalistic meditation, breathwork, and the systematic elimination of mental weakness and victimhood narratives.</div></div>
+<div class="pillar"><span class="pillar-icon">🌙</span><div class="pillar-name">Sleep & Recovery</div><div class="pillar-text">85% of daily testosterone production occurs during deep sleep. Sleep optimization is not optional — it is masculine duty.</div></div>
+<div class="pillar"><span class="pillar-icon">🔥</span><div class="pillar-name">Sacred Purpose</div><div class="pillar-text">Men with mission have higher testosterone. Purpose is not philosophy — it is physiological. Find your Tikkun and your body will respond.</div></div>
+<div class="pillar"><span class="pillar-icon">👥</span><div class="pillar-name">Brotherhood</div><div class="pillar-text">Masculine community, mentorship, accountability, and the ancient bonds of shared purpose that testosterone evolved to support.</div></div>
+</div>
+<div class="quote-block" style="margin-top:60px;">
+<p class="quote-text">A man without pillars is a man without foundation. Build the seven pillars and you build a life of sovereign masculine excellence.</p>
+<span class="quote-attr">— Michael Omondi</span>
+</div>
+</div>
+</div>
+<!-- RITUAL -->
+<div id="ritual" class="page">
+<div class="page-banner">
+<div class="page-banner-content">
+<p class="page-banner-tag">Daily Practice · Sacred Routine</p>
+<h1 class="page-banner-title">The Masculine<br>Morning Ritual</h1>
+</div>
+</div>
+<div class="section">
+<p class="section-body">Ritual is the technology of transformation. It is how the ancient Kabbalists aligned themselves with divine energy, and how the modern sovereign man aligns himself with his highest potential every single day.</p>
+<div class="divider"></div>
+<div class="ritual-timeline">
+<div class="ritual-step"><div class="step-time">05:00 AM — Dawn</div><div class="step-title">The First Breath (Kether Alignment)</div><div class="step-body">Rise before the sun. In the darkness before dawn, perform 4-7-8 breathing for 10 minutes. This activates the parasympathetic nervous system, reduces morning cortisol spikes, and creates the mental silence required for intentional living.</div></div>
+<div class="ritual-step"><div class="step-time">05:15 AM — Pre-Dawn</div><div class="step-title">Cold Exposure (Geburah Training)</div><div class="step-body">3 minutes of cold shower or cold plunge. Cold thermogenesis activates the sympathetic nervous system, increases testosterone, boosts norepinephrine by 300%, and builds the Geburah quality of discipline over comfort.</div></div>
+<div class="ritual-step"><div class="step-time">05:30 AM — Early Morning</div><div class="step-title">Physical Sacrament (Netzach Victory)</div><div class="step-body">45-60 minutes of compound strength training or high-intensity conditioning. Deadlifts, squats, presses — the primal movement patterns that activate the full masculine physiology and correspond to the Sefirah of Netzach.</div></div>
+<div class="ritual-step"><div class="step-time">06:30 AM — Morning</div><div class="step-title">The Solar Feed (Yesod Foundation)</div><div class="step-body">A testosterone-optimized breakfast: grass-fed beef or eggs with organ meat, saturated fats, zinc-rich foods, and natural sunlight exposure. How you feed your foundation determines the height of your tower.</div></div>
+<div class="ritual-step"><div class="step-time">07:00 AM — Morning</div><div class="step-title">Sacred Study (Chokmah Activation)</div><div class="step-body">30 minutes of deep study — Kabbalistic texts, philosophy, masculine psychology, science. Chokmah — pure wisdom — is cultivated through disciplined learning before the world makes its demands.</div></div>
+<div class="ritual-step"><div class="step-time">07:30 AM — Mission Launch</div><div class="step-title">The Day's Intention (Tiphareth Alignment)</div><div class="step-body">Write your three most important actions for the day. Set your intention with full presence. A man without daily intention is a ship without a rudder — and drifting men have low testosterone.</div></div>
+<div class="ritual-step"><div class="step-time">10:00 PM — Night</div><div class="step-title">The Sacred Sleep (Malkuth Rest)</div><div class="step-body">8-9 hours of sleep in darkness, cool temperature, phone off. 85% of testosterone is produced during deep sleep. To neglect sleep is to rob yourself of your own masculine power.</div></div>
+</div>
+</div>
+</div>
+<!-- HORMONES -->
+<div id="hormones" class="page">
+<div class="page-banner">
+<div class="page-banner-content">
+<p class="page-banner-tag">Endocrine System · Biological Mastery</p>
+<h1 class="page-banner-title">Hormonal Mastery<br>for Men</h1>
+</div>
+</div>
+<div class="section">
+<div class="hormone-visual">
+<div>
+<span class="section-tag">The Hormonal Hierarchy</span>
+<h2 class="section-title" style="font-size:2rem;">Balance is Power</h2>
+<div class="divider"></div>
+<p class="section-body" style="margin-bottom:40px;">Every hormone is a messenger. The man who understands his endocrine system has decoded the biological language of masculine power.</p>
+<div style="display:flex;flex-direction:column;gap:16px;">
+<div><div class="hormone-label"><span>TESTOSTERONE</span><span>Optimal: 700–1100 ng/dL</span></div><div class="hormone-track"><div class="hormone-fill" style="--target-width:82%;"></div></div></div>
+<div><div class="hormone-label"><span>CORTISOL</span><span>Healthy Range (Morning)</span></div><div class="hormone-track"><div class="hormone-fill" style="--target-width:55%;animation-delay:0.2s;"></div></div></div>
+<div><div class="hormone-label"><span>DHEA</span><span>Adrenal Precursor</span></div><div class="hormone-track"><div class="hormone-fill" style="--target-width:68%;animation-delay:0.4s;"></div></div></div>
+<div><div class="hormone-label"><span>GROWTH HORMONE</span><span>Sleep & Fasting</span></div><div class="hormone-track"><div class="hormone-fill" style="--target-width:74%;animation-delay:0.6s;"></div></div></div>
+<div><div class="hormone-label"><span>INSULIN</span><span>Metabolic Sensitivity</span></div><div class="hormone-track"><div class="hormone-fill" style="--target-width:40%;animation-delay:0.8s;"></div></div></div>
+<div><div class="hormone-label"><span>ESTROGEN (E2)</span><span>Balanced Conversion</span></div><div class="hormone-track"><div class="hormone-fill" style="--target-width:30%;animation-delay:1s;"></div></div></div>
+</div>
+</div>
+<div>
+<div class="testo-grid" style="grid-template-columns:1fr 1fr;gap:20px;">
+<div class="testo-card" style="padding:28px 24px;"><span class="card-icon">🌅</span><div class="card-title">Morning Sun</div><div class="card-body">20 minutes of morning sunlight suppresses melatonin, sets circadian rhythm, and directly stimulates testicular Leydig cells via the skin-eye axis.</div></div>
+<div class="testo-card" style="padding:28px 24px;"><span class="card-icon">🥩</span><div class="card-title">Cholesterol & Fats</div><div class="card-body">Testosterone is synthesized from cholesterol. Low-fat diets destroy masculine hormones. Eat red meat, eggs, olive oil, and animal fats.</div></div>
+<div class="testo-card" style="padding:28px 24px;"><span class="card-icon">⚡</span><div class="card-title">Zinc & Magnesium</div><div class="card-body">These two minerals are the most critical micronutrients for testosterone production. Most men are deficient in both due to depleted soils.</div></div>
+<div class="testo-card" style="padding:28px 24px;"><span class="card-icon">🚫</span><div class="card-title">Estrogen Disruptors</div><div class="card-body">Plastics (BPA/BPS), soy phytoestrogens, alcohol, chronic stress, and sleep deprivation all suppress testosterone and raise estrogen.</div></div>
+<div class="testo-card" style="padding:28px 24px;"><span class="card-icon">🏋️</span><div class="card-title">Resistance Training</div><div class="card-body">Multi-joint, heavy compound lifts (deadlift, squat, bench) produce the most powerful acute testosterone surge of any natural method.</div></div>
+<div class="testo-card" style="padding:28px 24px;"><span class="card-icon">🧘</span><div class="card-title">Stress Mastery</div><div class="card-body">Cortisol and testosterone share a precursor — cortisol steals from testosterone under chronic stress. Stress mastery is hormonal optimization.</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- PHILOSOPHY -->
+<div id="philosophy" class="page">
+<div class="page-banner">
+<div class="page-banner-content">
+<p class="page-banner-tag">Masculine Philosophy · Ancient Wisdom</p>
+<h1 class="page-banner-title">The Philosophy of<br>Sovereign Manhood</h1>
+</div>
+</div>
+<div class="section">
+<div class="testo-grid">
+<div class="testo-card"><span class="card-icon">♟️</span><div class="card-title">Stoic Masculine Virtue</div><div class="card-body">Marcus Aurelius, Epictetus, Seneca — the Stoics built a philosophy of masculine excellence: control what you can, accept what you cannot, act with virtue regardless of outcome.</div></div>
+<div class="testo-card"><span class="card-icon">🌟</span><div class="card-title">The Tikkun Olam</div><div class="card-body">In Kabbalah, every man has a Tikkun — a correction, a specific mission for his soul's evolution and the repair of the world. To know your Tikkun is to know your purpose.</div></div>
+<div class="testo-card"><span class="card-icon">🔱</span><div class="card-title">The Warrior-Sage Path</div><div class="card-body">The highest masculine ideal integrates the warrior (Geburah) and the sage (Chokmah-Binah) — physical strength in service of wisdom, expressed through disciplined action.</div></div>
+<div class="testo-card"><span class="card-icon">🏔️</span><div class="card-title">Anti-Fragility</div><div class="card-body">Nassim Taleb's anti-fragility is ancient Kabbalistic truth — the masculine soul becomes stronger through adversity, not despite it. Do not seek comfort; seek the trials that forge you.</div></div>
+<div class="testo-card"><span class="card-icon">👑</span><div class="card-title">Masculine Sovereignty</div><div class="card-body">Sovereignty is not domination — it is complete ownership of your choices, emotions, reactions, and destiny. The sovereign man is king of his inner kingdom before he rules anything external.</div></div>
+<div class="testo-card"><span class="card-icon">🌊</span><div class="card-title">Shadow Integration</div><div class="card-body">Carl Jung and Kabbalah agree: the man who denies his shadow is controlled by it. Integrating the dark aspects of the masculine psyche is the path to wholeness.</div></div>
+</div>
+<div class="quote-block" style="margin-top:60px;">
+<p class="quote-text">The greatest battle is not on the field of war. It is in the silent chamber of a man's own soul — where he either conquers himself, or is conquered forever.</p>
+<span class="quote-attr">— Michael Omondi</span>
+</div>
+<div class="pillars-row" style="margin-top:60px;grid-template-columns:repeat(3,1fr);">
+<div class="pillar"><div class="pillar-name">Know Thyself</div><div class="pillar-text">The beginning of all masculine wisdom is ruthless self-awareness — Delphi Oracle and Kabbalistic self-knowledge united.</div></div>
+<div class="pillar"><div class="pillar-name">Discipline = Freedom</div><div class="pillar-text">The paradox of masculine excellence — the more you discipline yourself, the more liberated you become.</div></div>
+<div class="pillar"><div class="pillar-name">Legacy Over Comfort</div><div class="pillar-text">Every choice is a vote for the man you are becoming. Vote for legacy, not convenience.</div></div>
+</div>
+</div>
+</div>
+<!-- CONTACT -->
+<div id="contact" class="page">
+<div class="page-banner">
+<div class="page-banner-content">
+<p class="page-banner-tag">A Man With a Mission</p>
+<h1 class="page-banner-title">Let's Wake Up<br>Together</h1>
+</div>
+</div>
+<div class="section">
+<div style="max-width:780px;margin:0 auto 80px;text-align:center;">
+<span class="sacred-symbol">🔥</span>
+<h2 class="section-title" style="text-align:center;">Why I Built This</h2>
+<div class="divider" style="margin:24px auto;"></div>
+<p style="font-size:1.25rem;line-height:2;color:var(--text-dim);font-style:italic;margin-bottom:28px;">I am not a therapist. I am not a certified coach. I have no formal credentials to offer you.</p>
+<p style="font-size:1.15rem;line-height:2;color:var(--text);margin-bottom:28px;">What I have is eyes that can see — and what I see is men all around me drowning in anxiety, crushed by depression, and wandering without purpose. Good men. Strong men. Men who were never given a map for their own souls.</p>
+<p style="font-size:1.15rem;line-height:2;color:var(--text);margin-bottom:28px;">That broke something open in me. So I started reading, studying, asking hard questions — about Kabbalah, about testosterone, about what it means to be a man who truly lives. And I could not stay silent about what I found.</p>
+<p style="font-size:1rem;line-height:2;color:var(--gold);font-style:italic;font-family:'Cinzel Decorative',serif;">This website is not about me. It is about you — and every man who deserves to wake up and live his purpose.</p>
+</div>
+<div class="quote-block">
+<p class="quote-text">A man who knows his purpose does not wander. He does not drown in anxiety or despair. He burns — and that fire lights the way for everyone around him.</p>
+<span class="quote-attr">— Michael Omondi</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:80px;align-items:start;">
+<div>
+<span class="section-tag">Reach Out</span>
+<h2 class="section-title" style="font-size:2rem;">You Are Not Alone</h2>
+<div class="divider"></div>
+<p class="section-body" style="margin-bottom:40px;">If something on this site stirred something in you — if you felt seen, or challenged, or called — write to me. I read every message. I am just a man who cares deeply about other men finding their way.</p>
+<div class="contact-item">
+<span class="contact-icon">✉️</span>
+<div>
+<div class="contact-label">Email</div>
+<div class="contact-val"><a href="mailto:michaelomondi@outlook.com" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,168,76,0.3);" onmouseover="this.style.color='#F0D080'" onmouseout="this.style.color='var(--gold)'">michaelomondi@outlook.com</a></div>
+</div>
+</div>
+<div class="contact-item">
+<span class="contact-icon">💬</span>
+<div>
+<div class="contact-label">WhatsApp</div>
+<div class="contact-val"><a href="https://wa.me/254796577039" target="_blank" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,168,76,0.3);" onmouseover="this.style.color='#F0D080'" onmouseout="this.style.color='var(--gold)'">+254 796 577 039</a></div>
+</div>
+</div>
+<div class="contact-item" style="border:none;">
+<span class="contact-icon">📍</span>
+<div>
+<div class="contact-label">Based In</div>
+<div class="contact-val">Nairobi, Kenya · Speaking to Men Everywhere</div>
+</div>
+</div>
+</div>
+<div>
+<span class="section-tag">Send a Message</span>
+<h2 class="section-title" style="font-size:2rem;">Write to Michael</h2>
+<div class="divider"></div>
+<div class="contact-form">
+<div class="form-group"><label class="form-label">Your Name</label><input class="form-input" type="text" placeholder="Your name"></div>
+<div class="form-group"><label class="form-label">Your Email</label><input class="form-input" type="email" placeholder="your@email.com"></div>
+<div class="form-group"><label class="form-label">What's weighing on you?</label><textarea class="form-textarea" style="min-height:140px;" placeholder="Share what's on your heart — anxiety, lack of purpose, feeling lost, anything. This is a safe space."></textarea></div>
+<a href="mailto:michaelomondi@outlook.com" class="btn-primary" style="width:100%;text-align:center;display:block;">Send to Michael</a>
+</div>
+</div>
+</div>
+<div style="margin-top:100px;text-align:center;padding:60px 40px;border:1px solid rgba(201,168,76,0.12);background:linear-gradient(135deg,rgba(201,168,76,0.04),rgba(139,26,26,0.04));">
+<span class="section-tag" style="display:block;text-align:center;margin-bottom:16px;">The Mission</span>
+<h2 class="section-title" style="text-align:center;font-size:clamp(1.5rem,3vw,2.5rem);">Men Were Built to Live With Purpose.<br>Not to Merely Survive.</h2>
+<div class="divider" style="margin:28px auto;"></div>
+<p style="font-size:1.1rem;color:var(--text-dim);max-width:600px;margin:0 auto;line-height:2;font-style:italic;">Anxiety fades when a man finds his mission. Depression lifts when a man knows his worth. The world does not need more broken, purposeless men — it needs awakened ones. That is why this exists.</p>
+</div>
+</div>
+</div>
+</div><!-- /.main-wrap -->
+<footer style="position:relative;z-index:1;">
+<span class="footer-logo">Michael Omondi</span>
+<p class="footer-text">A Man Who Saw Men Suffering — And Could Not Stay Silent</p>
+<ul class="footer-links">
+<li><a href="#" onclick="showPage('home')">Home</a></li>
+<li><a href="#" onclick="showPage('kabbalah')">Kabbalah</a></li>
+<li><a href="#" onclick="showPage('testosterone')">Testosterone</a></li>
+<li><a href="#" onclick="showPage('narratives')">Narratives</a></li>
+<li><a href="#" onclick="showPage('pillars')">Pillars</a></li>
+<li><a href="#" onclick="showPage('ritual')">Ritual</a></li>
+<li><a href="#" onclick="showPage('hormones')">Hormones</a></li>
+<li><a href="#" onclick="showPage('philosophy')">Philosophy</a></li>
+<li><a href="#" onclick="showPage('contact')">Contact</a></li>
+</ul>
+<p class="footer-copy">© 2026 Michael Omondi · Sacred Masculine Wellness · All Rights Reserved</p>
+</footer>
+<script>
+function showPage(id) {
+document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+const target = document.getElementById(id);
+if (target) { target.style.display = id === 'home' ? 'flex' : 'block'; target.classList.add('active'); window.scrollTo(0,0); }
+document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active-link'));
+const al = document.getElementById('nav-' + id);
+if (al) al.classList.add('active-link');
+closeSidebar();
+if (id === 'kabbalah') setTimeout(initKabCanvas, 100);
+if (id === 'testosterone') setTimeout(initTestoCanvas, 100);
+}
+function toggleNav() {
+const s = document.getElementById('sidebar'), t = document.getElementById('sidebarToggle'), b = document.getElementById('sidebarBackdrop');
+if (s.classList.contains('open')) { closeSidebar(); }
+else { s.classList.add('open'); t.classList.add('is-open'); b.classList.add('visible'); document.body.classList.add('sidebar-open'); }
+}
+function closeSidebar() {
+document.getElementById('sidebar').classList.remove('open');
+document.getElementById('sidebarToggle').classList.remove('is-open');
+document.getElementById('sidebarBackdrop').classList.remove('visible');
+document.body.classList.remove('sidebar-open');
+}
+document.getElementById('home').style.display = 'flex';
+document.getElementById('nav-home').classList.add('active-link');
+const cursor = document.getElementById('cursor'), ring = document.getElementById('cursor-ring');
+document.addEventListener('mousemove', e => { cursor.style.left = e.clientX+'px'; cursor.style.top = e.clientY+'px'; ring.style.left = e.clientX+'px'; ring.style.top = e.clientY+'px'; });
+(function() {
+const canvas = document.getElementById('bg-canvas'), ctx = canvas.getContext('2d');
+let W, H, stars = [], particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+for (let i = 0; i < 200; i++) stars.push({ x: Math.random(), y: Math.random(), r: Math.random()*1.5+0.2, a: Math.random(), speed: Math.random()*0.0003+0.0001 });
+for (let i = 0; i < 30; i++) particles.push({ x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight, vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3, r: Math.random()*2+1, a: Math.random()*0.5+0.1 });
+let t = 0;
+function draw() {
+ctx.clearRect(0,0,W,H); t += 0.005;
+stars.forEach(s => { s.a += s.speed; const al = (Math.sin(s.a)+1)/2; ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(201,168,76,${al*0.6})`; ctx.fill(); });
+const cx=W/2, cy=H/2;
+ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*0.05);
+for (let i=0;i<3;i++) { const r=150+i*80; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.strokeStyle=`rgba(201,168,76,${0.02-i*0.005})`; ctx.lineWidth=1; ctx.stroke(); for(let j=0;j<6;j++){const a=(j/6)*Math.PI*2+t*0.02;ctx.beginPath();ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);ctx.lineTo(Math.cos(a+Math.PI/3)*r,Math.sin(a+Math.PI/3)*r);ctx.strokeStyle='rgba(201,168,76,0.04)';ctx.stroke();} }
+ctx.restore();
+particles.forEach(p => { p.x+=p.vx; p.y+=p.vy; if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=`rgba(201,168,76,${p.a*0.4})`; ctx.fill(); });
+requestAnimationFrame(draw);
+}
+draw();
+})();
+
+// Improved Canvas Resizing for Mobile
+let kabCanvasObj = null;
+let testoCanvasObj = null;
+
+function initKabCanvas() {
+const canvas = document.getElementById('kab-canvas'); if (!canvas) return;
+const ctx = canvas.getContext('2d'); 
+const W = canvas.offsetWidth, H = canvas.offsetHeight; 
+canvas.width = W; canvas.height = H;
+
+const sefirot = [{name:'Kether',x:0.5,y:0.05,color:'#FFFFFF'},{name:'Chokmah',x:0.75,y:0.17,color:'#C9A84C'},{name:'Binah',x:0.25,y:0.17,color:'#8B6914'},{name:'Chesed',x:0.75,y:0.38,color:'#4A90D9'},{name:'Geburah',x:0.25,y:0.38,color:'#C0392B'},{name:'Tiphareth',x:0.5,y:0.50,color:'#F0D080'},{name:'Netzach',x:0.75,y:0.65,color:'#27AE60'},{name:'Hod',x:0.25,y:0.65,color:'#E67E22'},{name:'Yesod',x:0.5,y:0.78,color:'#9B59B6'},{name:'Malkuth',x:0.5,y:0.95,color:'#8B7355'}];
+const paths = [[0,1],[0,2],[1,2],[1,3],[2,4],[1,5],[2,5],[3,4],[3,5],[4,5],[3,6],[4,7],[5,6],[5,7],[5,8],[6,7],[6,8],[7,8],[8,9]];
+let t=0, hov=-1;
+
+// Store reference to clear interval on resize
+if(kabCanvasObj) cancelAnimationFrame(kabCanvasObj);
+
+canvas.addEventListener('mousemove', e => { const r=canvas.getBoundingClientRect(); const mx=e.clientX-r.left,my=e.clientY-r.top; hov=-1; sefirot.forEach((s,i)=>{const dx=mx-s.x*W,dy=my-s.y*H;if(Math.sqrt(dx*dx+dy*dy)<18)hov=i;}); });
+
+function draw() {
+ctx.clearRect(0,0,W,H); t+=0.02;
+// Re-calculate W/H in case of resize during animation
+const curW = canvas.offsetWidth, curH = canvas.offsetHeight;
+if(curW !== canvas.width || curH !== canvas.height) {
+    canvas.width = curW; canvas.height = curH; 
+    // In a production app, we'd re-init here, but for simplicity we continue
+}
+
+paths.forEach(([a,b])=>{const s1=sefirot[a],s2=sefirot[b];const g=ctx.createLinearGradient(s1.x*curW,s1.y*curH,s2.x*curW,s2.y*curH);g.addColorStop(0,s1.color+'60');g.addColorStop(1,s2.color+'60');ctx.beginPath();ctx.moveTo(s1.x*curW,s1.y*curH);ctx.lineTo(s2.x*curW,s2.y*curH);ctx.strokeStyle=g;ctx.lineWidth=1.5;ctx.stroke();});
+const p=(Math.sin(t)+1)/2;
+[0,1,3,5,4,6,8,9].forEach((idx,i,arr)=>{if(i<arr.length-1){const s1=sefirot[arr[i]],s2=sefirot[arr[i+1]];ctx.beginPath();ctx.moveTo(s1.x*curW,s1.y*curH);ctx.lineTo(s2.x*curW,s2.y*curH);ctx.strokeStyle=`rgba(201,168,76,${p*0.5})`;ctx.lineWidth=2;ctx.stroke();}});
+sefirot.forEach((s,i)=>{const ih=i===hov,r=ih?22:16;const gg=ctx.createRadialGradient(s.x*curW,s.y*curH,0,s.x*curW,s.y*curH,r*3);gg.addColorStop(0,s.color+'40');gg.addColorStop(1,'transparent');ctx.beginPath();ctx.arc(s.x*curW,s.y*curH,r*3,0,Math.PI*2);ctx.fillStyle=gg;ctx.fill();ctx.beginPath();ctx.arc(s.x*curW,s.y*curH,r,0,Math.PI*2);ctx.fillStyle=ih?s.color:s.color+'AA';ctx.fill();ctx.strokeStyle=s.color;ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle=ih?'#fff':'#C9A84C';ctx.font=`${ih?'11px':'9px'} 'Rajdhani',sans-serif`;ctx.textAlign='center';ctx.fillText(s.name,s.x*curW,s.y*curH+r+14);});
+kabCanvasObj = requestAnimationFrame(draw);
+}
+draw();
+}
+
+function initTestoCanvas() {
+const canvas = document.getElementById('testo-canvas'); if (!canvas) return;
+const ctx = canvas.getContext('2d'); canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+const W=canvas.width, H=canvas.height; let t=0;
+
+if(testoCanvasObj) cancelAnimationFrame(testoCanvasObj);
+
+function draw() {
+ctx.clearRect(0,0,W,H); t+=0.03;
+const cx=W/2, amp=W*0.25, freq=Math.PI*2/(H*0.35);
+for(let s=0;s<2;s++){const off=s*Math.PI;ctx.beginPath();for(let y=0;y<H;y+=2){const x=cx+Math.sin(y*freq+t+off)*amp;if(y===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.strokeStyle=s===0?'rgba(201,168,76,0.7)':'rgba(139,26,26,0.7)';ctx.lineWidth=2.5;ctx.stroke();}
+for(let y=0;y<H;y+=30){const x1=cx+Math.sin(y*freq+t)*amp,x2=cx+Math.sin(y*freq+t+Math.PI)*amp;ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.strokeStyle='rgba(201,168,76,0.3)';ctx.lineWidth=1;ctx.stroke();ctx.beginPath();ctx.arc(x1,y,4,0,Math.PI*2);ctx.fillStyle='#C9A84C';ctx.fill();ctx.beginPath();ctx.arc(x2,y,4,0,Math.PI*2);ctx.fillStyle='#8B1A1A';ctx.fill();}
+testoCanvasObj = requestAnimationFrame(draw);
+}
+draw();
+}
+
+// Handle orientation change for canvases
+window.addEventListener('resize', () => {
+    if(document.getElementById('kabbalah').classList.contains('active')) initKabCanvas();
+    if(document.getElementById('testosterone').classList.contains('active')) initTestoCanvas();
+});
+</script>
+</body>
+</html>
+```
